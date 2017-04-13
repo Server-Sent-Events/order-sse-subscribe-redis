@@ -9,6 +9,8 @@ var (
 
 func main() {
 
+	gChannels = make(map[string]*Channel)
+
 	startRedis()
 
 	startMux()
