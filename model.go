@@ -18,7 +18,6 @@ type Terminal struct {
 type Channel struct {
 	UUID      string
 	Terminals map[string]*Terminal
-	Sub       *redis.PubSub
 	sync.Mutex
 }
 

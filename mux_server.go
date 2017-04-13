@@ -40,6 +40,7 @@ func startMux() {
 	router.Handle("/subscribe", ensureSubscribe(http.HandlerFunc(subscribeChannel))).Methods("GET")
 	router.Handle("/api/v1/channel", ensureCreateChannel(http.HandlerFunc(createChannel))).Methods("POST")
 	router.Handle("/", http.HandlerFunc(MainPageHandler))
+	router.Handle("/msg", http.HandlerFunc(postMsg)).Methods("POST")
 
 	http.ListenAndServe(":3000", router)
 }

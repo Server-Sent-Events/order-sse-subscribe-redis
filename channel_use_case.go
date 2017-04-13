@@ -8,6 +8,12 @@ import (
 	"github.com/go-redis/redis"
 )
 
+func postMsg(w http.ResponseWriter, r *http.Request) {
+
+	_ = gRedisClient.Publish("0012a2ed-c500-4b8f-83e7-c7da351d839c", "hello").Err()
+
+}
+
 func createChannel(w http.ResponseWriter, r *http.Request) {
 
 	channelUUID := r.Header.Get("channel_uuid")
@@ -17,7 +23,6 @@ func createChannel(w http.ResponseWriter, r *http.Request) {
 		ch := &Channel{
 			UUID:      channelUUID,
 			Terminals: make(map[string]*Terminal),
-			Sub:       gRedisClient.Subscribe(channelUUID),
 		}
 
 		gChannels[channelUUID] = ch
@@ -55,13 +60,13 @@ func subscribeChannel(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 
-	channel.Terminals[terminalUUID] = &Terminal{UUID: terminalUUID}
+	t := channel.Terminals[terminalUUID]
 
 	var receive error
 	var msg *redis.Message
 	for receive == nil {
 
-		msg, receive = channel.Sub.ReceiveMessage()
+		msg, receive = t.Sub.ReceiveMessage()
 
 		fmt.Fprintf(w, "data: Message: %s\n\n", msg.Payload)
 

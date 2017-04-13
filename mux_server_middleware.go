@@ -17,18 +17,21 @@ func ensureSubscribe(next http.Handler) http.Handler {
 
 		if channelUUID = r.FormValue("channel_uuid"); len(strings.TrimSpace(channelUUID)) == 0 {
 			w.WriteHeader(http.StatusUnauthorized)
+			log.Printf("deu ruim 1")
 			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
 			return
 		}
 
 		if terminal = r.FormValue("terminal_uuid"); len(strings.TrimSpace(terminal)) == 0 {
 			w.WriteHeader(http.StatusUnauthorized)
+			log.Printf("deu ruim 2")
 			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
 			return
 		}
 
 		if _, ok := gChannels[channelUUID]; !ok {
 			w.WriteHeader(http.StatusUnauthorized)
+			log.Printf("deu ruim 3")
 			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
 			return
 		}
@@ -37,6 +40,7 @@ func ensureSubscribe(next http.Handler) http.Handler {
 		channel := gChannels[channelUUID]
 		channel.Terminals[terminal] = &Terminal{
 			UUID: terminal,
+			Sub:  gRedisClient.Subscribe(channelUUID),
 		}
 
 		next.ServeHTTP(w, r)
