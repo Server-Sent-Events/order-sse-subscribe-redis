@@ -1,0 +1,41 @@
+package main
+
+import (
+	"github.com/garyburd/redigo/redis"
+	uuid "github.com/satori/go.uuid"
+)
+
+var (
+	gChannels   map[string]*Channel
+	gPubSubConn *redis.PubSubConn
+	gRedisConn  = func() (redis.Conn, error) {
+		return redis.Dial("tcp", ":6379")
+	}
+)
+
+func init() {
+	gChannels = make(map[string]*Channel)
+}
+
+// Funcao que ira criar um canal para compartilhar order
+func (t *Terminal) shareOrder() *Channel {
+
+	ch := &Channel{
+		UUID:      uuid.NewV4().String(),
+		Terminals: make(map[string]*Terminal),
+	}
+
+	ch.Terminals[t.UUID] = t
+
+	return ch
+}
+
+// Conecta um terminal a um novo canal
+func (t *Terminal) connect(ch *Channel) error {
+
+	if val, ok := gChannels[ch.UUID]; ok {
+		val.Terminals[t.UUID] = t
+	}
+
+	return nil
+}
