@@ -7,6 +7,29 @@ import (
 	"time"
 )
 
+func ensureCreateOrder(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+
+		if logicNumber := r.Header.Get("logic_number"); len(strings.TrimSpace(logicNumber)) == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
+			return
+		}
+
+		if merchantID := r.Header.Get("merchant_id"); len(strings.TrimSpace(merchantID)) == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
+			return
+		}
+
+		next.ServeHTTP(w, r)
+		log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
+	})
+}
+
+//r.Header.Get("logic_number")
+
 // Middleware usado para validar o path subscribe
 // se possui o UUID do canal compartilhado por outro cliente
 func ensureSubscribe(next http.Handler) http.Handler {
@@ -17,21 +40,18 @@ func ensureSubscribe(next http.Handler) http.Handler {
 
 		if channelUUID = r.FormValue("channel_uuid"); len(strings.TrimSpace(channelUUID)) == 0 {
 			w.WriteHeader(http.StatusUnauthorized)
-			log.Printf("deu ruim 1")
 			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
 			return
 		}
 
 		if terminal = r.FormValue("terminal_uuid"); len(strings.TrimSpace(terminal)) == 0 {
 			w.WriteHeader(http.StatusUnauthorized)
-			log.Printf("deu ruim 2")
 			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
 			return
 		}
 
 		if _, ok := gChannels[channelUUID]; !ok {
 			w.WriteHeader(http.StatusUnauthorized)
-			log.Printf("deu ruim 3")
 			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
 			return
 		}

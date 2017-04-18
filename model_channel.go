@@ -1,18 +1,6 @@
 package main
 
-import (
-	"sync"
-
-	"github.com/go-redis/redis"
-)
-
-// Terminal is an exported
-type Terminal struct {
-	UUID     string
-	Number   string
-	Merchant string
-	Sub      *redis.PubSub
-}
+import "sync"
 
 // Channel is an exported
 type Channel struct {
