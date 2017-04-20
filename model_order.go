@@ -83,9 +83,9 @@ type Terminal struct {
 	ID        uint      `json:"-"`
 	UUID      string    `json:"id" validate:"required"`
 	Number    string    `json:"-" validate:"required"`
-	Merchant  Merchant  `json:"merchant,omitempty" validate:"required"`
-	CreatedAt time.Time `json:"-" validate:"required"`
-	UpdatedAt time.Time `json:"-" validate:"required"`
+	Merchant  Merchant  `json:"merchant,omitempty"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 	Sub       *redis.PubSub
 }
 

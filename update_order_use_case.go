@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -18,7 +19,7 @@ func paymentValue(order *Order) error {
 
 func findOrderRedis(number string, uuid string) (*Order, error) {
 	var redisOrder Order
-	jsonOrder, _ := gRedisClient.HGet(number, uuid).Result()
+	jsonOrder, _ := orderClient.redisClient.HGet(number, uuid).Result()
 	err := json.Unmarshal([]byte(jsonOrder), &redisOrder)
 	if err != nil {
 		return nil, err
@@ -36,18 +37,15 @@ func unmarshalOrder(r io.Reader) (*Order, error) {
 	return &order, nil
 }
 
-func validateOrder(order *Order, number string, merchant string) error {
+func validateOrder(order *Order, merchant string) error {
 	if order.MerchantID != merchant {
 		return errors.New("merchant_id can not be changed")
-	}
-	if order.LogicNumber != number {
-		return errors.New("logic_number can not be changed")
 	}
 	return nil
 }
 
 func storeDB(order Order) error {
-	gRedisClient.HDel(order.LogicNumber, order.UUID)
+	orderClient.redisClient.HDel(order.LogicNumber, order.UUID)
 	return nil
 }
 
@@ -57,7 +55,7 @@ func storeRedis(order Order) error {
 		return err
 	}
 
-	r := gRedisClient.HSet(order.LogicNumber, order.UUID, string(jsonOrder))
+	r := orderClient.redisClient.HSet(order.LogicNumber, order.UUID, string(jsonOrder))
 	if r.Err() != nil {
 		return r.Err()
 	}
@@ -89,7 +87,7 @@ func updateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = validateOrder(redisOrder, number, merchantUUID)
+	err = validateOrder(redisOrder, merchantUUID)
 	if err != nil {
 		respondWithError(w, http.StatusConflict, err.Error())
 		return
@@ -98,6 +96,7 @@ func updateOrder(w http.ResponseWriter, r *http.Request) {
 	order.MerchantID = redisOrder.MerchantID
 	order.LogicNumber = redisOrder.LogicNumber
 	order.UUID = redisOrder.UUID
+	order.UpdatedAt = time.Now()
 
 	err = paymentValue(order)
 	if err != nil {

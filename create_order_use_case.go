@@ -44,7 +44,7 @@ func createOrder(w http.ResponseWriter, r *http.Request) {
 	//include order to redis
 	//INCLUIR MUTEX PARA ORDEM COMPARTILHADA?
 	if order.Status != CLOSED {
-		gRedisClient.HSet(order.LogicNumber, order.UUID, string(jsonOrder))
+		orderClient.redisClient.HSet(order.LogicNumber, order.UUID, string(jsonOrder))
 	} else {
 		//TODO: GRAVAR DIRETO NO BD
 	}

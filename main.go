@@ -1,15 +1,17 @@
 package main
 
-import "github.com/go-redis/redis"
-
-var (
-	gRedisClient *redis.Client
-	gChannels    map[string]*Channel
-)
+// var OrderClient = struct {
+// 	sync.RWMutex
+// 	redisClient *redis.Client
+// 	channels    map[string]*Channel
+// }{channels: make(map[string]*Channel)}
+var orderClient *OrderClient
 
 func main() {
 
-	gChannels = make(map[string]*Channel)
+	orderClient = &OrderClient{
+		channels: make(map[string]*Channel),
+	}
 
 	startRedis()
 

@@ -17,7 +17,7 @@ func findOrderByID(w http.ResponseWriter, r *http.Request) {
 
 	logicNumber := r.Header.Get("logic_number")
 
-	jsonOrder, err := gRedisClient.HGet(logicNumber, orderUUID).Result()
+	jsonOrder, err := orderClient.redisClient.HGet(logicNumber, orderUUID).Result()
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

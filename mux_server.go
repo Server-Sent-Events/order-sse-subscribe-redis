@@ -18,8 +18,9 @@ func startMux() {
 	router.Handle("/api/v3/order/{order_id}", ensureCreateOrder(http.HandlerFunc(updateOrder))).Methods("PUT")
 
 	// sse sockets
-	router.Handle("/subscribe", ensureSubscribe(http.HandlerFunc(subscribeChannel))).Methods("GET")
-	router.Handle("/api/v1/channel", ensureCreateChannel(http.HandlerFunc(createChannel))).Methods("POST")
+	router.Handle("/api/v3/order/shareOrder", ensureCreateOrder(http.HandlerFunc(shareOrder))).Methods("PUT")
+	router.Handle("/api/v3/order/subscribe/{channel_id}", ensureCreateOrder(http.HandlerFunc(subscribeChannel))).Methods("GET")
+
 	router.Handle("/", http.HandlerFunc(MainPageHandler))
 	router.Handle("/msg", http.HandlerFunc(postMsg)).Methods("POST")
 

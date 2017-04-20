@@ -10,7 +10,7 @@ func listOrder(w http.ResponseWriter, r *http.Request) {
 	logicNumber := r.Header.Get("logic_number")
 	//gRedisClient.Del(logicNumber)
 
-	keys, err := gRedisClient.HKeys(logicNumber).Result()
+	keys, err := orderClient.redisClient.HKeys(logicNumber).Result()
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -25,7 +25,7 @@ func listOrder(w http.ResponseWriter, r *http.Request) {
 
 	for _, v := range keys {
 
-		j, err := gRedisClient.HGet(logicNumber, v).Result()
+		j, err := orderClient.redisClient.HGet(logicNumber, v).Result()
 		if err != nil {
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 			return

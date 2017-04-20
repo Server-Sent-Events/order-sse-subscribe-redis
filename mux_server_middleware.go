@@ -52,17 +52,17 @@ func ensureSubscribe(next http.Handler) http.Handler {
 			return
 		}
 
-		if _, ok := gChannels[channelUUID]; !ok {
+		if _, ok := orderClient.channels[channelUUID]; !ok {
 			w.WriteHeader(http.StatusUnauthorized)
 			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
 			return
 		}
 
 		//fazer outras verificacoes para garantir EC, etc
-		channel := gChannels[channelUUID]
+		channel := orderClient.channels[channelUUID]
 		channel.Terminals[terminal] = &Terminal{
 			UUID: terminal,
-			Sub:  gRedisClient.Subscribe(channelUUID),
+			Sub:  orderClient.redisClient.Subscribe(channelUUID),
 		}
 
 		next.ServeHTTP(w, r)
