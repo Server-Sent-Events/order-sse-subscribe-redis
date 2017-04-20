@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -19,13 +20,13 @@ func createOrder(w http.ResponseWriter, r *http.Request) {
 	var order Order
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	err = json.Unmarshal(b, &order)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -33,14 +34,12 @@ func createOrder(w http.ResponseWriter, r *http.Request) {
 		order.UUID = uuid.NewV4().String()
 	}
 
+	order.CreatedAt = time.Now()
+	order.UpdatedAt = time.Now()
 	order.LogicNumber = r.Header.Get("logic_number")
 	order.MerchantID = r.Header.Get("merchant_id")
 
-	jsonOrder, err := json.Marshal(order)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	jsonOrder, _ := json.Marshal(order)
 
 	//include order to redis
 	//INCLUIR MUTEX PARA ORDEM COMPARTILHADA?
@@ -50,6 +49,5 @@ func createOrder(w http.ResponseWriter, r *http.Request) {
 		//TODO: GRAVAR DIRETO NO BD
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	w.Write(jsonOrder)
+	respondWithJSON(w, http.StatusOK, order)
 }

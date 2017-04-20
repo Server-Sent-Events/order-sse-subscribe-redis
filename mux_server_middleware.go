@@ -22,8 +22,10 @@ func ensureCreateOrder(next http.Handler) http.Handler {
 			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
 			return
 		}
+		w.Header().Set("Content-Type", "application/json")
 
 		next.ServeHTTP(w, r)
+
 		log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
 	})
 }

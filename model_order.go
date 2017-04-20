@@ -19,11 +19,27 @@ const (
 	CLOSED
 )
 
-var orderStatus = [...]string{
+var orderStatus = []string{
 	"DRAFT",
 	"ENTERED",
 	"PAID",
 	"CLOSED",
+}
+
+func (o OrderStatusType) name() string {
+	return orderStatus[o]
+}
+
+func (o OrderStatusType) ordinal() int {
+	return int(o)
+}
+
+func (o OrderStatusType) String() string {
+	return orderStatus[o]
+}
+
+func (o OrderStatusType) values() *[]string {
+	return &orderStatus
 }
 
 // OrderStatusToInt function will return name
@@ -36,7 +52,16 @@ func OrderStatusToInt(value string) int {
 	return 0
 }
 
-// MarshalJSON StatusType is an exported
+func (status *OrderStatusType) UnmarshalJSON(b []byte) error {
+	var value string
+	err := json.Unmarshal(b, &value)
+	if err != nil {
+		return err
+	}
+	*status = OrderStatusType(OrderStatusToInt(value))
+	return nil
+}
+
 func (status OrderStatusType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(fmt.Sprintf(orderStatus[status]))
 }
@@ -66,17 +91,17 @@ type Terminal struct {
 
 // Order is an exported
 type Order struct {
-	UUID         string               `json:"id" validate:"required"`
-	CreatedAt    time.Time            `json:"created_at,omitempty" validate:"required"`
-	UpdatedAt    time.Time            `json:"updated_at,omitempty"`
-	Number       string               `json:"number,omitempty"`
-	Reference    string               `json:"reference,omitempty"`
-	Status       OrderStatusType      `json:"status" validate:"required"`
-	Notes        string               `json:"notes,omitempty"`
-	Price        int                  `json:"price,omitempty"`
-	MerchantID   string               `json:"merchant_id" validate:"required"`
-	LogicNumber  string               `json:"logic_number" validate:"required"`
-	Terminal     Terminal             `json:"terminal" validate:"required"`
+	UUID        string          `json:"id"`
+	CreatedAt   time.Time       `json:"created_at,omitempty"`
+	UpdatedAt   time.Time       `json:"updated_at,omitempty"`
+	Number      string          `json:"number,omitempty"`
+	Reference   string          `json:"reference,omitempty"`
+	Status      OrderStatusType `json:"status"`
+	Notes       string          `json:"notes,omitempty"`
+	Price       int             `json:"price,omitempty"`
+	MerchantID  string          `json:"merchant_id"`
+	LogicNumber string          `json:"logic_number"`
+	//Terminal     Terminal             `json:"terminal"`
 	Items        []Item               `json:"items,omitempty"`
 	Transactions []PaymentTransaction `json:"transactions,omitempty"`
 }
