@@ -7,7 +7,7 @@ import (
 
 func listOrder(w http.ResponseWriter, r *http.Request) {
 
-	logicNumber := r.Header.Get("logic_number")
+	logicNumber := r.FormValue("logic_number")
 	//gRedisClient.Del(logicNumber)
 
 	keys, err := orderClient.redisClient.HKeys(logicNumber).Result()

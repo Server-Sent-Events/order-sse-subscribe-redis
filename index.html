@@ -8,7 +8,7 @@ foi
 	<script type="text/javascript">
 
 	    // Create a new HTML5 EventSource
-	    var source = new EventSource('/subscribe?channel_uuid=0012a2ed-c500-4b8f-83e7-c7da351d839c&terminal_uuid='+Math.random().toString(36).substring(7));
+	    var source = new EventSource('/api/v3/subscribe');
 
 	    // Create a callback for when a new message is received.
 	    source.onmessage = function(e) {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -64,8 +65,8 @@ func (c *OrderClient) createChannel(uuid string, merchantUUD string, number stri
 func shareOrder(w http.ResponseWriter, r *http.Request) {
 
 	var orderUUID string
-	number := r.Header.Get("logic_number")
-	merchantUUID := r.Header.Get("merchant_id")
+	number := r.FormValue("logic_number")
+	merchantUUID := r.FormValue("merchant_id")
 
 	if orderUUID = mux.Vars(r)["order_id"]; len(strings.TrimSpace(orderUUID)) == 0 {
 		respondWithError(w, http.StatusBadRequest, "OrderId not found")
@@ -79,11 +80,16 @@ func shareOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = validateOrder(redisOrder, merchantUUID)
-	if err != nil {
-		respondWithError(w, http.StatusConflict, err.Error())
-		return
-	}
+	log.Printf("<< redis: %s merchantUUID: %s", redisOrder.MerchantID, merchantUUID)
+
+	// definir regra do que é share ou nao
+	// err = validateOrder(redisOrder, merchantUUID)
+	// if err != nil {
+	// 	respondWithError(w, http.StatusConflict, err.Error())
+	// 	return
+	// }
+
+	log.Printf("<<createChannel:  number: %s orderUUID: %s merchantUUID: %s", number, orderUUID, merchantUUID)
 
 	ch := orderClient.createChannel(orderUUID, merchantUUID, number)
 

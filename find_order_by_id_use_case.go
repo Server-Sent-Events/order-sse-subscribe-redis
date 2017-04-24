@@ -15,7 +15,7 @@ func findOrderByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logicNumber := r.Header.Get("logic_number")
+	logicNumber := r.FormValue("logic_number")
 
 	jsonOrder, err := orderClient.redisClient.HGet(logicNumber, orderUUID).Result()
 	if err != nil {

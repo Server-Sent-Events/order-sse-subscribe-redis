@@ -65,8 +65,8 @@ func storeRedis(order Order) error {
 func updateOrder(w http.ResponseWriter, r *http.Request) {
 
 	var orderUUID string
-	number := r.Header.Get("logic_number")
-	merchantUUID := r.Header.Get("merchant_id")
+	number := r.FormValue("logic_number")
+	merchantUUID := r.FormValue("merchant_id")
 
 	if orderUUID = mux.Vars(r)["order_id"]; len(strings.TrimSpace(orderUUID)) == 0 {
 		respondWithError(w, http.StatusBadRequest, "OrderId not found")

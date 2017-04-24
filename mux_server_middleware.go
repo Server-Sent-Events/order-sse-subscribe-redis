@@ -7,18 +7,18 @@ import (
 	"time"
 )
 
-func ensureCreateOrder(next http.Handler) http.Handler {
+func ensureBaseOrder(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
-		if logicNumber := r.Header.Get("logic_number"); len(strings.TrimSpace(logicNumber)) == 0 {
-			w.WriteHeader(http.StatusBadRequest)
+		if logicNumber := r.FormValue("logic_number"); len(strings.TrimSpace(logicNumber)) == 0 {
+			respondWithError(w, http.StatusBadRequest, "logic_number not found")
 			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
 			return
 		}
 
-		if merchantID := r.Header.Get("merchant_id"); len(strings.TrimSpace(merchantID)) == 0 {
-			w.WriteHeader(http.StatusBadRequest)
+		if merchantID := r.FormValue("merchant_id"); len(strings.TrimSpace(merchantID)) == 0 {
+			respondWithError(w, http.StatusBadRequest, "merchant_id not found")
 			log.Printf("<< %s %s %v", r.Method, r.URL.Path, time.Since(start))
 			return
 		}

@@ -36,8 +36,8 @@ func createOrder(w http.ResponseWriter, r *http.Request) {
 
 	order.CreatedAt = time.Now()
 	order.UpdatedAt = time.Now()
-	order.LogicNumber = r.Header.Get("logic_number")
-	order.MerchantID = r.Header.Get("merchant_id")
+	order.LogicNumber = r.FormValue("logic_number")
+	order.MerchantID = r.FormValue("merchant_id")
 
 	jsonOrder, _ := json.Marshal(order)
 
