@@ -5,6 +5,7 @@ RUN mkdir -p /app
 WORKDIR /app
 
 ADD target/bin/order-sse /app
+ADD index.html /app
 
 EXPOSE 8080
 

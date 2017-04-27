@@ -12,6 +12,7 @@ echo '### ERROR build ###'
 exit 1
 }
 
+docker rmi -f arthurstockler/order-sse
 docker build -t arthurstockler/order-sse .
-
-docker-compose up
+docker push arthurstockler/order-sse
+#docker-compose up

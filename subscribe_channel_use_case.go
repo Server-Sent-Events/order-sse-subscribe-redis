@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/go-redis/redis"
+	"github.com/gorilla/mux"
 )
 
 func subscribeChannel(w http.ResponseWriter, r *http.Request) {
@@ -15,29 +17,24 @@ func subscribeChannel(w http.ResponseWriter, r *http.Request) {
 	merchantUUID := r.FormValue("merchant_id")
 	pin := r.FormValue("pin")
 
-	number = "78272704-4"
-	pin = "78272704-4"
-	merchantUUID = "0012a2ed-c500-4b8f-83e7-c7da351d839c"
-	channelUUID = "63409d48-e1fe-418e-ab0f-61202d8f4e2e"
+	log.Printf("<<channelUUID: %s", channelUUID)
+	log.Printf("<<number: %s", number)
+	log.Printf("<<merchantUUID: %s", merchantUUID)
+	log.Printf("<<pin: %s", pin)
 
-	log.Println("deu ruim xxxx")
-
-	// if channelUUID = mux.Vars(r)["channel_id"]; len(strings.TrimSpace(channelUUID)) == 0 {
-	// 	log.Println("deu ruim 001")
-	// 	respondWithError(w, http.StatusBadRequest, "chanel_id not found")
-	// 	return
-	// }
+	if channelUUID = mux.Vars(r)["channel_id"]; len(strings.TrimSpace(channelUUID)) == 0 {
+		respondWithError(w, http.StatusBadRequest, "chanel_id not found")
+		return
+	}
 
 	f, ok := w.(http.Flusher)
 	if !ok {
-		log.Println("deu ruim 002")
 		respondWithError(w, http.StatusInternalServerError, "Streaming unsupported!")
 		return
 	}
 
 	ch, err := orderClient.getChannel(channelUUID, merchantUUID, pin)
 	if err != nil {
-		log.Println("deu ruim 003")
 		respondWithError(w, http.StatusNotFound, err.Error())
 		return
 	}

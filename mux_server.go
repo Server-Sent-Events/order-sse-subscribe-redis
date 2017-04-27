@@ -15,6 +15,8 @@ func startMux() {
 }
 
 func apiV3(router *mux.Router) {
+	router.Handle("/", http.HandlerFunc(MainPageHandler))
+
 	apiV3 := router.PathPrefix("/api/v3").Subrouter()
 	apiV3.Handle("/order", ensureBaseOrder(http.HandlerFunc(createOrder))).Methods("POST")
 	apiV3.Handle("/order", ensureBaseOrder(http.HandlerFunc(listOrder))).Methods("GET")
@@ -25,7 +27,6 @@ func apiV3(router *mux.Router) {
 	apiV3.Handle("/order/{order_id}/share", ensureBaseOrder(http.HandlerFunc(shareOrder))).Methods("PUT")
 	apiV3.Handle("/subscribe", http.HandlerFunc(subscribeChannel)).Methods("GET")
 
-	apiV3.Handle("/", http.HandlerFunc(MainPageHandler))
 	apiV3.Handle("/msg/{channel_id}", http.HandlerFunc(postMsg)).Methods("POST")
 }
 

@@ -7,9 +7,15 @@
 foi
 	<script type="text/javascript">
 
-	    // Create a new HTML5 EventSource
-	    var source = new EventSource('/api/v3/subscribe');
+			var urlParams = new URLSearchParams(window.location.search);
+			var logic_number = urlParams.get('logic_number');
+			var merchant_id = urlParams.get('merchant_id');
+			var pin = urlParams.get('pin');
+			var channel_id = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
 
+	    // Create a new HTML5 EventSource
+	    //var source = new EventSource('/api/v3/subscribe/'+channel_id+'?logic_number='+logic_number+'&merchant_id='+merchant_id+'&pin='+pin);
+			var source = new EventSource('http://34.209.76.174:8080/api/v3/subscribe/ac34da34-b2f6-4a71-943c-390e79720477?logic_number=78272704-4&merchant_id=0012a2ed-c500-4b8f-83e7-c7da351d839c&pin=78272704-4');
 	    // Create a callback for when a new message is received.
 	    source.onmessage = function(e) {
 
