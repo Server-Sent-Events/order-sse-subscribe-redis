@@ -1,12 +1,17 @@
-FROM golang:alpine
+FROM golang:onbuild
+
+RUN mkdir -p /app
 
 WORKDIR /app
 
-ADD order-sse-subscribe-redis /app/
+ADD . /app
 
-ENTRYPOINT ["./order-sse-subscribe-redis"]
+RUN go build order-sse-subscribe-redis
 
 EXPOSE 8080
+
+CMD ["./order-sse-subscribe-redis"]
+
 
 
 
