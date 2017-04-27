@@ -1,7 +1,14 @@
-redis:
+order-sse-redis:
     image: redis
     volumes:
         - ./data:/data
     ports:
         - "6379:6379"
     entrypoint: redis-server
+
+order-sse:
+    image: arthurstockler/order-sse
+    ports:
+        - "8080:8080"
+    links:
+      - order-sse-redis

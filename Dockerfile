@@ -6,7 +6,7 @@ WORKDIR /app
 
 ADD . /app
 
-RUN go build order-sse-subscribe-redis
+RUN go build .
 
 EXPOSE 8080
 
