@@ -24,7 +24,7 @@ func startMux() {
 	router.Handle("/", http.HandlerFunc(MainPageHandler))
 	router.Handle("/msg/{channel_id}", http.HandlerFunc(postMsg)).Methods("POST")
 
-	http.ListenAndServe(":3000", router)
+	http.ListenAndServe(":8080", router)
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
