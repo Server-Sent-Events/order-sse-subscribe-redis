@@ -9,22 +9,24 @@ import (
 
 // Inicializa o servidor HTTP
 func startMux() {
-
 	router := mux.NewRouter().StrictSlash(true)
+	apiV3(router)
+	http.ListenAndServe(":8080", router)
+}
 
-	router.Handle("/api/v3/order", ensureBaseOrder(http.HandlerFunc(createOrder))).Methods("POST")
-	router.Handle("/api/v3/order", ensureBaseOrder(http.HandlerFunc(listOrder))).Methods("GET")
-	router.Handle("/api/v3/order/{order_id}", ensureBaseOrder(http.HandlerFunc(findOrderByID))).Methods("GET")
-	router.Handle("/api/v3/order/{order_id}", ensureBaseOrder(http.HandlerFunc(updateOrder))).Methods("PUT")
+func apiV3(router *mux.Router) {
+	apiV3 := router.PathPrefix("/api/v3").Subrouter()
+	apiV3.Handle("/order", ensureBaseOrder(http.HandlerFunc(createOrder))).Methods("POST")
+	apiV3.Handle("/order", ensureBaseOrder(http.HandlerFunc(listOrder))).Methods("GET")
+	apiV3.Handle("/order/{order_id}", ensureBaseOrder(http.HandlerFunc(findOrderByID))).Methods("GET")
+	apiV3.Handle("/order/{order_id}", ensureBaseOrder(http.HandlerFunc(updateOrder))).Methods("PUT")
 
 	// sse sockets
-	router.Handle("/api/v3/order/{order_id}/share", ensureBaseOrder(http.HandlerFunc(shareOrder))).Methods("PUT")
-	router.Handle("/api/v3/subscribe", http.HandlerFunc(subscribeChannel)).Methods("GET")
+	apiV3.Handle("/order/{order_id}/share", ensureBaseOrder(http.HandlerFunc(shareOrder))).Methods("PUT")
+	apiV3.Handle("/subscribe", http.HandlerFunc(subscribeChannel)).Methods("GET")
 
-	router.Handle("/", http.HandlerFunc(MainPageHandler))
-	router.Handle("/msg/{channel_id}", http.HandlerFunc(postMsg)).Methods("POST")
-
-	http.ListenAndServe(":8080", router)
+	apiV3.Handle("/", http.HandlerFunc(MainPageHandler))
+	apiV3.Handle("/msg/{channel_id}", http.HandlerFunc(postMsg)).Methods("POST")
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {

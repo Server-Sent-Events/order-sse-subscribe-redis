@@ -2,12 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
 func listOrder(w http.ResponseWriter, r *http.Request) {
 
-	logicNumber := r.FormValue("logic_number")
+	logicNumber := r.Header.Get("logic_number")
+	log.Printf("<< logicNumber: %s", logicNumber)
+
 	//gRedisClient.Del(logicNumber)
 
 	keys, err := orderClient.redisClient.HKeys(logicNumber).Result()
