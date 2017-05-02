@@ -13,11 +13,10 @@ import (
 func subscribeChannel(w http.ResponseWriter, r *http.Request) {
 
 	var channelUUID string
-	number := r.FormValue("logic_number")
-	merchantUUID := r.FormValue("merchant_id")
+	number := r.Header.Get("logic_number")
+	merchantUUID := r.Header.Get("merchant_id")
 	pin := r.FormValue("pin")
 
-	log.Printf("<<channelUUID: %s", channelUUID)
 	log.Printf("<<number: %s", number)
 	log.Printf("<<merchantUUID: %s", merchantUUID)
 	log.Printf("<<pin: %s", pin)
@@ -26,6 +25,7 @@ func subscribeChannel(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "chanel_id not found")
 		return
 	}
+	log.Printf("<<channelUUID: %s", channelUUID)
 
 	f, ok := w.(http.Flusher)
 	if !ok {

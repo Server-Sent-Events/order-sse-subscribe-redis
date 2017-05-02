@@ -73,9 +73,13 @@ func shareOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("<<number: %s", number)
+	log.Printf("<<merchantUUID: %s", merchantUUID)
+	log.Printf("<<orderUUID: %s", orderUUID)
+
 	// order em memoria no redis
 	redisOrder, err := findOrderRedis(number, orderUUID)
-	if err != nil {
+	if err != nil || redisOrder == nil {
 		respondWithError(w, http.StatusNotFound, err.Error())
 		return
 	}

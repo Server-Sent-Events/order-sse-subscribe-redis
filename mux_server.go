@@ -25,7 +25,7 @@ func apiV3(router *mux.Router) {
 
 	// sse sockets
 	apiV3.Handle("/order/{order_id}/share", ensureBaseOrder(http.HandlerFunc(shareOrder))).Methods("PUT")
-	apiV3.Handle("/subscribe", http.HandlerFunc(subscribeChannel)).Methods("GET")
+	apiV3.Handle("/subscribe/{channel_id}", ensureBaseOrder(http.HandlerFunc(subscribeChannel))).Methods("GET")
 
 	apiV3.Handle("/msg/{channel_id}", http.HandlerFunc(postMsg)).Methods("POST")
 }
